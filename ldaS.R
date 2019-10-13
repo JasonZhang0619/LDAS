@@ -1,5 +1,5 @@
 source("sparseCov.r")
-ldas.default = function (x, grouping, prior = proportions, tol = 1e-04, alpha = 0.1, type = 'hard', tol = 1e-04, method='mle', ...) 
+ldas= function (x, grouping, prior = proportions,alpha = 0.1, type = 'hard', tol = 1e-04, method='mle', ...) 
 {
     if (is.null(dim(x))) stop("'x' is not a matrix")
     x <- as.matrix(x)
