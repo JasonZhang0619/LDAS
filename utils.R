@@ -71,7 +71,7 @@ format.methods=function(trainx,trainy,testx,name,FUN)
          },
          {#HDDA, LDA and all other methods that follow this format
            fit=FUN(trainx,trainy)
-           result=as.vector(predict(fit,testx))$class}
+           result=as.vector(predict(fit,testx)$class)}
   )
   result
 }
