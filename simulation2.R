@@ -19,6 +19,7 @@ alfs=c(0.05,0.01,0.0075,0.005,0.0025,0.001)
 
 methods=c('LDA','SVM','NB','HDDA','RDA','PenalizedLDA')#,'SDA')
 funcs=c(lda,svm,naiveBayes,hdda,rda,PenalizedLDA)#,sda)
+names(funcs)=methods
 
 cat('dimension:',setting$p,'\n',
     'difference of two centroids in one dimension: 0 -', setting$T,' including',setting$n,'grids','\n',
@@ -28,7 +29,7 @@ k = 0.5                            #(must less than 0.5?)
 cov = switch(covtype, genTriDiag(setting$p,k), genArMat(setting$p,k),genBandedMat(setting$p,5),genRandSpMat(setting$p))
 
 result=data.frame()
-for(t in (0:setting$ngirds)/setting$ngrids*setting$T)
+for(t in (0:setting$ngrids)/setting$ngrids*setting$T)
 {
   #ngrids different distance of means
   means1 = rep(0, setting$p)
@@ -46,16 +47,18 @@ for(t in (0:setting$ngirds)/setting$ngrids*setting$T)
       {
         fit=ldas(traindata$data,traindata$grouping,alpha = alf, type=type)
         ypred=predict.ldas(fit,testdata$data)$class
-        result.t=rbind(result,data.frame(ytrue=ytrue,ypred=ypred,method='LDAS',alf=alf,type=type))
+        result.t=rbind(result.t,data.frame(ytrue=ytrue,ypred=ypred,method='LDAS',alf=alf,type=type))
         }
     #other methods
-    for(i in 1:length(methods))
+    for(name in methods)
     {
-      ypred=format.methods(traindata$data,traindata$grouping,testdata$data,methods[i],funcs[i])
-      result.t=rbind(result,data.frame(ytrue=ytrue,ypred=ypred,method=methods[i],alf=NA,type=NA))
+      ypred=format.methods(traindata$data,traindata$grouping,testdata$data,name,funcs[[name]])
+      result.t=rbind(result.t,data.frame(ytrue=ytrue,ypred=ypred,method=name,alf=-1,type=NA))
     }
   }
   result.t$t=t
   result=rbind(result,result.t)
 }
 result$prec=result$ytrue==result$ypred
+
+save(result,file=paste(data,'simlation',sep=''))
