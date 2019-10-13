@@ -61,4 +61,5 @@ for(t in (0:setting$ngrids)/setting$ngrids*setting$T)
 }
 result$prec=result$ytrue==result$ypred
 
-save(result,file=paste(data,'simlation',sep=''))
+save(result,file='simulation/simulation_tri_balance.rda')
+write.csv(result,"simulation/simulation_tri_balance.csv",row.names = FALSE)
