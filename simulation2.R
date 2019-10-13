@@ -12,7 +12,7 @@ setting <-list(p=100, #dimensions
                ng=2) #number of group
 
 covtypes=c("TriDiag", "ArMat", "Banded", "Random")
-covtype=1 #which type of covariance we use
+covtype=2 #which type of covariance we use
 
 types = c('hard', 'soft', 'scad', 'adpt')
 alfs=c(0.05,0.01,0.0075,0.005,0.0025,0.001)
@@ -61,5 +61,5 @@ for(t in (0:setting$ngrids)/setting$ngrids*setting$T)
 }
 result$prec=result$ytrue==result$ypred
 
-save(result,file='simulation/simulation_tri_balance.rda')
-write.csv(result,"simulation/simulation_tri_balance.csv",row.names = FALSE)
+save(result,file='simulation/simulation_arm_balance.rda')
+write.csv(result,"simulation/simulation_arm_balance.csv",row.names = FALSE,append=TRUE)

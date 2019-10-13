@@ -75,5 +75,6 @@ for (p in 1:k){
 
 save(pred.sparse,pred.methods,folds,file=paste(data,'result_dimension.rda',sep=''))
 
-
+save(result,file='real/MP.rda')
+write.csv(result,"real/MP.csv",row.names = FALSE,append=TRUE)
   
