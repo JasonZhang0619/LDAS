@@ -34,7 +34,7 @@ data_generate = function(N,means, cov , sd = 1)
     noise = t(noise)
   }
   data = data + noise
-  list(data=data,grouping=grouping)
+  list(data=data,grouping=as.factor(grouping))
 }
 
 #unify the form of different methods
