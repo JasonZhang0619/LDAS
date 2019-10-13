@@ -48,7 +48,7 @@ format.methods=function(trainx,trainy,testx,name,FUN)
            result=as.vector(predict(fit,testx))
          },
          NB={
-           fit=naiveBayes(trainx,trainy)
+           fit=naiveBayes(trainx,as.factor(trainy))
            result=as.vector(predict(fit,testx))
          },
          RDA={#use CV on trainset and use the best alpha and delta 
