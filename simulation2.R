@@ -3,16 +3,16 @@ source("utils.r")
 
 #setting for generate data
 setting <-list(p=100, #dimensions
-               T=3, #the distance of group means ranges from 0 to T
+               T=2, #the distance of group means ranges from 0 to T
                ngrids=20, #n even grids in 0-T
-               train=20, #for each grid, take the average of 25 traningsets
+               train=100, #for each grid, take the average of 25 traningsets
                test=20, #for each trainstet, take the average of 20 test obervations
                N=10, #sample size for each group
                balance=TRUE,#training set includes N-1:N-1 or N-1: N
                ng=2) #number of group
 
 covtypes=c("TriDiag", "ArMat", "Banded", "Random")
-covtype=2 #which type of covariance we use
+covtype=1 #which type of covariance we use
 
 types = c('hard', 'soft', 'scad', 'adpt')
 alfs=c(0.05,0.01,0.0075,0.005,0.0025,0.001)
@@ -61,5 +61,5 @@ for(t in (0:setting$ngrids)/setting$ngrids*setting$T)
 }
 result$prec=result$ytrue==result$ypred
 
-save(result,file='simulation/simulation_arm_balance.rda')
-write.csv(result,"simulation/simulation_arm_balance.csv",row.names = FALSE,append=TRUE)
+exsit=file.exists('simulation/simulation_tri_balance.csv')
+write.table(result,"simulation/simulation_tri_balance.csv",row.names = FALSE, col.names = !exsit, sep = ",", append=TRUE)
