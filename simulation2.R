@@ -8,7 +8,7 @@ setting <-list(p=100, #dimensions
                train=200, #for each grid, take the average of 25 traningsets
                test=20, #for each trainstet, take the average of 20 test obervations
                N=10, #sample size for each group
-               balance=TRUE,#training set includes N-1:N-1 or N-1: N
+               balance=FALSE,#training set includes N-1:N-1 or N-1: N
                ng=2) #number of group
 
 covtypes=c("TriDiag", "ArMat", "Banded", "Random")
@@ -40,6 +40,12 @@ for(t in (0:setting$ngrids)/setting$ngrids*setting$T)
   {
     cov = switch(covtype, genTriDiag(setting$p,k), genArMat(setting$p,k),genBandedMat(setting$p,5),genRandSpMat(setting$p))
     traindata=data_generate(setting$N*setting$ng,means,cov)
+    if (!setting$balance)
+      {
+      traindata$data=traindata$data[-1,]
+      traindata$grouping=traindata$grouping[-1]
+      #delete first observation from grouping 0
+      } 
     testdata=data_generate(setting$test/setting$ng,means,cov)
     ytrue=testdata$grouping
     #LDAS
@@ -60,7 +66,7 @@ for(t in (0:setting$ngrids)/setting$ngrids*setting$T)
   result.t$t=t
   result=rbind(result,result.t)
 }
-result$prec=result$ytrue==result$ypred
+result$prec=result$ytrue==result$ypred    
 
-exsit=file.exists('simulation/simulation_ran_balance.csv')
-write.table(result,"simulation/simulation_ran_balance.csv",row.names = FALSE, col.names = !exsit, sep = ",", append=TRUE)
+exsit=file.exists( 'simulation/simulation_ran_unbalance.csv')
+write.table(result,"simulation/simulation_ran_unbalance.csv",row.names = FALSE, col.names = !exsit, sep = ",", append=TRUE)
