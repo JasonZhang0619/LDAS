@@ -4,10 +4,10 @@ library(e1071)
 library(HDclassif)
 library(rda)
 library(penalizedLDA)
-source("ldasparse.r")
-source("functions.r")
+source("ldaS.r")
+source("utils.r")
 
-data='MP'
+data='Khan'
 switch(data,
        MP={#loading MP data
          # source("MP/MP.Library.R")
@@ -36,21 +36,20 @@ alfs=c(0.1,0.05,0.01,0.001)
 
 #methods to compare with
 methods=c('LDA','SVM','NB','RDA','PenalizedLDA','HDDA')#,'sda',)
-funcs=c(lda,svm,NA,rda,PenalizedLDA,hdda)#,sda,)
+funcs=c(lda,svm,naiveBayes,rda,PenalizedLDA,hdda)#,sda,)
 names(funcs)=methods
 
-datax1=datax[-1,]
-datay1=datay[-1]
+# datax1=datax[-1,]
+# datay1=datay[-1]
 samplesize=nrow(datax)
 
 #k=10 folds CV
 k <- 10### # of folds
 folds <- cvFolds(samplesize, K=k)
-pred.sparse=array(0,dim=c(length(alfs),length(types),samplesize),dimnames=list(paste('alfs =',alfs),types))
-pred.methods=array(0,dim=c(length(methods),samplesize),dimnames = list(methods))
+# pred.sparse=array(0,dim=c(length(alfs),length(types),samplesize),dimnames=list(paste('alfs =',alfs),types))
+# pred.methods=array(0,dim=c(length(methods),samplesize),dimnames = list(methods))
 result=data.frame()
 for (p in 1:k){
-  result.k=data.frame()
   cat("working on",p,'/',k,"-th fold:\n")
   trainx <- datax[folds$subsets[folds$which != p], ] #Set the training set
   trainy <- datay[folds$subsets[folds$which != p]]
@@ -61,19 +60,21 @@ for (p in 1:k){
     for (type in types){
       cat('alfs=',alf,'types=',type,'\n')
       ypred = predict.ldas( ldas(trainx, trainy, alpha = alf ,type = type ),validationx)$class
-      result.k=rbind(result.k,data.frame(ytrue=validationy,ypred=ypred,method='LDAS',alf=alf,type=type))
+      result=rbind(result,data.frame(ytrue=validationy,ypred=ypred,method='LDAS',alf=alf,type=type,index=folds$subsets[folds$which == p]))
     }
   cat('other methods\n')
   for(name in methods){
     cat(name,'\n')
     ypred = format.methods(trainx,trainy,validationx,name,funcs[[name]])
-    result.k=rbind(result.k,data.frame(ytrue=validationy,ypred=ypred,method=name,alf=NA,type=NA))
+    result=rbind(result,data.frame(ytrue=validationy,ypred=ypred,method=name,alf=NA,type=NA,index=folds$subsets[folds$which == p]))
   }
-  result.k$fold=p
-  result=rbind(result,result.k)
 }
 
-save(pred.sparse,pred.methods,folds,file=paste(data,'result_dimension.rda',sep=''))
+ 
+# save(pred.sparse,pred.methods,folds,file=paste(data,'result_dimension.rda',sep=''))
 
 exsit=file.exists('real/MP.csv')
 write.table(result,"real/MP.csv",row.names = FALSE, col.names = !exsit, sep = ",", append=TRUE)
+
+cv=data.frame(index=folds$subsets,fold=folds$which)
+write.table(cv,"real/MP_CV.csv",row.names = FALSE, sep = ",", append=TRUE)
